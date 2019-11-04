@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace WebApiOigaTech
 {
@@ -9,6 +10,9 @@ namespace WebApiOigaTech
     {
         public static void Register(HttpConfiguration config)
         {
+            // Cors
+            config.EnableCors(new EnableCorsAttribute("http://localhost:4200", headers: "*", methods: "*"));
+
             // Configuración y servicios de API web
 
             // Rutas de API web

@@ -23,11 +23,7 @@ namespace WebApiOigaTech.Controllers
         public EmployeesController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
-        }
-
-        //public EmployeesController()
-        //{
-        //}
+        }        
 
         /// <summary>
         /// Get a List of Custom Employees
@@ -43,10 +39,8 @@ namespace WebApiOigaTech.Controllers
 
             foreach (Employee emp in employees)
             {
-                var test = db.ContractType.Where(ct => ct.idContractType == emp.fk_ContractType).FirstOrDefault().contractTypeName;
-                var test2 = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0);
-
                 EmployeeCustom empCustom = new EmployeeCustom {
+                    idEmployee = emp.idEmployee,
                     employeeName = emp.employeeName,
                     employeePhone = emp.employeePhone,
                     employeePosition = emp.employeePosition,
@@ -71,6 +65,7 @@ namespace WebApiOigaTech.Controllers
         [ResponseType(typeof(EmployeeCustom))]
         public IHttpActionResult GetEmployee(int id)
         {
+           // GetEmployee Employee by ID
             Employee emp = repository.GetById(id);
 
             if (emp == null)            
@@ -78,6 +73,7 @@ namespace WebApiOigaTech.Controllers
 
             EmployeeCustom empCustom = new EmployeeCustom
             {
+                idEmployee = emp.idEmployee,
                 employeeName = emp.employeeName,
                 employeePhone = emp.employeePhone,
                 employeePosition = emp.employeePosition,

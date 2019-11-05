@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using DataAccess;
+using WebApiOigaTech.Models;
 
 namespace WebApiOigaTech.Controllers
 {
@@ -71,15 +72,25 @@ namespace WebApiOigaTech.Controllers
         }
 
         // POST: api/Employees
-        [ResponseType(typeof(Employee))]
-        public IHttpActionResult PostEmployee(Employee employee)
+        [ResponseType(typeof(EmployeeCustom))]
+        public IHttpActionResult PostEmployee(EmployeeCustom employee)
         {
             //if (!ModelState.IsValid)
             //{
             //    return BadRequest(ModelState);
             //}
+            
+            // Mapping Employee
+            Employee _employee = new Employee {
+                employeeName = employee.employeeName,
+                employeePhone = employee.employeePhone,
+                employeePosition = employee.employeePosition,
+                hourlySalary = employee.hourlySalary,
+                monthlySalary = employee.monthlySalary,
+                fk_ContractType = db.ContractType.Where(ct => ct.contractTypeName == employee.contractType).FirstOrDefault().idContractType
+            };
 
-            db.Employee.Add(employee);
+            db.Employee.Add(_employee);
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = employee.idEmployee }, employee);

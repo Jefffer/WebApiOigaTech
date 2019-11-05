@@ -9,13 +9,13 @@ namespace BusinessLogic.Services
 {
     public class EmployeeService : IEmployeeService
     {
-        public decimal CalculateAnnualHourlySalary()
+        public decimal CalculateAnnualHourlySalary(decimal hourlySalary)
         {
 
             return 0;
         }
 
-        public decimal CalculateMonthlyHourlySalary()
+        public decimal CalculateAnnualMonthlySalary(decimal monthlySalary)
         {
 
             return 0;

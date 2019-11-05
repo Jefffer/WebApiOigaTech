@@ -13,6 +13,13 @@ namespace WebApiOigaTech
             // Cors
             config.EnableCors(new EnableCorsAttribute("http://localhost:4200", headers: "*", methods: "*"));
 
+            //var container = new UnityContainer();
+            //container.RegisterType<IProductRepository, ProductRepository>(new HierarchicalLifetimeManager());
+            //config.DependencyResolver = new UnityResolver(container);
+
+            //var container = IocContainer.Instance; // Or any other way to fetch your container.
+            //config.DependencyResolver = new UnityDependencyResolver(container);
+
             // Configuración y servicios de API web
 
             // Rutas de API web

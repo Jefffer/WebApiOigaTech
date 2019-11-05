@@ -8,7 +8,7 @@ namespace BusinessLogic.Interfaces
 {
     public interface IEmployeeService
     {
-        decimal CalculateAnnualHourlySalary();
-        decimal CalculateMonthlyHourlySalary();
+        decimal CalculateAnnualHourlySalary(decimal hourlySalary);
+        decimal CalculateAnnualMonthlySalary(decimal monthlySalary);
     }
 }

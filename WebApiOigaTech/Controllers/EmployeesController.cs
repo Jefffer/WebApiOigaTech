@@ -5,10 +5,11 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using BusinessLogic.Interfaces;
 using DataAccess;
+using DataAccess.Repositories;
 using WebApiOigaTech.Models;
 
 namespace WebApiOigaTech.Controllers
@@ -16,24 +17,78 @@ namespace WebApiOigaTech.Controllers
     public class EmployeesController : ApiController
     {
         private EmployeeOigaTechEntities db = new EmployeeOigaTechEntities();
+        private EmployeeRepository repository = new EmployeeRepository();
+        private IEmployeeService _employeeService;
 
-        // GET: api/Employees
-        public IQueryable<Employee> GetEmployee()
+        public EmployeesController(IEmployeeService employeeService)
         {
-            return db.Employee;
+            _employeeService = employeeService;
         }
 
+        //public EmployeesController()
+        //{
+        //}
+
+        /// <summary>
+        /// Get a List of Custom Employees
+        /// </summary>
+        /// <returns></returns>
+        // GET: api/Employees
+        public List<EmployeeCustom> GetEmployee()
+        {
+            List<Employee> employees = repository.GetAll();
+
+            // New Employee custom list
+            List<EmployeeCustom> empCustomList = new List<EmployeeCustom>();
+
+            foreach (Employee emp in employees)
+            {
+                var test = db.ContractType.Where(ct => ct.idContractType == emp.fk_ContractType).FirstOrDefault().contractTypeName;
+                var test2 = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0);
+
+                EmployeeCustom empCustom = new EmployeeCustom {
+                    employeeName = emp.employeeName,
+                    employeePhone = emp.employeePhone,
+                    employeePosition = emp.employeePosition,
+                    contractType = db.ContractType.Where(ct => ct.idContractType == emp.fk_ContractType).FirstOrDefault().contractTypeName,
+                    hourlySalary = emp.hourlySalary,
+                    monthlySalary = emp.monthlySalary,
+                    annualHourlySalary = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0),
+                    annualMonthlySalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0)
+                };
+
+                empCustomList.Add(empCustom);
+            }
+            return empCustomList;
+        }
+
+        /// <summary>
+        /// Get a specific Custom Employee
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: api/Employees/5
-        [ResponseType(typeof(Employee))]
+        [ResponseType(typeof(EmployeeCustom))]
         public IHttpActionResult GetEmployee(int id)
         {
-            Employee employee = db.Employee.Find(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
+            Employee emp = repository.GetById(id);
 
-            return Ok(employee);
+            if (emp == null)            
+                return NotFound();
+
+            EmployeeCustom empCustom = new EmployeeCustom
+            {
+                employeeName = emp.employeeName,
+                employeePhone = emp.employeePhone,
+                employeePosition = emp.employeePosition,
+                contractType = db.ContractType.Where(ct => ct.idContractType == emp.fk_ContractType).FirstOrDefault().contractTypeName,
+                hourlySalary = emp.hourlySalary,
+                monthlySalary = emp.monthlySalary,
+                annualHourlySalary = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0),
+                annualMonthlySalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0)
+            };
+
+            return Ok(empCustom);
         }
 
         // PUT: api/Employees/5

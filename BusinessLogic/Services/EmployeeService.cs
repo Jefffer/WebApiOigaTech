@@ -1,4 +1,5 @@
 ﻿using BusinessLogic.Interfaces;
+using BusinessLogic.Services.ContractFactoryMethod;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,15 @@ namespace BusinessLogic.Services
 
         public decimal CalculateAnnualHourlySalary(decimal hourlySalary)
         {
-            decimal salary = hours*hourlySalary*months;
+            IContractService contract = ContractCreator.Create(ContractCreator.HourlySalary);
+            decimal salary = contract.CalculateAnnualSalary(hourlySalary);
             return salary;
         }
 
         public decimal CalculateAnnualMonthlySalary(decimal monthlySalary)
         {
-            decimal salary = monthlySalary * months;
+            IContractService contract = ContractCreator.Create(ContractCreator.MonthlySalary);
+            decimal salary = contract.CalculateAnnualSalary(monthlySalary);
             return salary;
         }
     }

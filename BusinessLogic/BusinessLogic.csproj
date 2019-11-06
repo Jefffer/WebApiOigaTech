@@ -41,8 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\IContractService.cs" />
     <Compile Include="Interfaces\IEmployeeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ContractFactoryMethod\ContractCreator.cs" />
+    <Compile Include="Services\ContractFactoryMethod\HourlyContract.cs" />
+    <Compile Include="Services\ContractFactoryMethod\MonthlyContract.cs" />
     <Compile Include="Services\EmployeeService.cs" />
   </ItemGroup>
   <ItemGroup />

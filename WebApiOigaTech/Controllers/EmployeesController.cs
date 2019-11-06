@@ -63,13 +63,13 @@ namespace WebApiOigaTech.Controllers
         /// <returns></returns>
         // GET: api/Employees/5
         [ResponseType(typeof(EmployeeCustom))]
-        public IHttpActionResult GetEmployee(int id)
+        public List<EmployeeCustom> GetEmployee(int id)
         {
            // GetEmployee Employee by ID
             Employee emp = repository.GetById(id);
 
             if (emp == null)            
-                return NotFound();
+                return null;
 
             EmployeeCustom empCustom = new EmployeeCustom
             {
@@ -83,8 +83,9 @@ namespace WebApiOigaTech.Controllers
                 annualHourlySalary = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0),
                 annualMonthlySalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0)
             };
-
-            return Ok(empCustom);
+            List<EmployeeCustom> empList = new List<EmployeeCustom>();
+            empList.Add(empCustom);
+            return empList;
         }
 
         // PUT: api/Employees/5

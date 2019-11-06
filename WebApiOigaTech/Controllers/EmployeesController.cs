@@ -36,9 +36,15 @@ namespace WebApiOigaTech.Controllers
 
             // New Employee custom list
             List<EmployeeCustom> empCustomList = new List<EmployeeCustom>();
+            decimal currentSalary;
 
             foreach (Employee emp in employees)
             {
+                if (emp.fk_ContractType == 1) // Hourly Salary                
+                    currentSalary = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0);                
+                else // Monthly Salary
+                    currentSalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0);
+
                 EmployeeCustom empCustom = new EmployeeCustom {
                     idEmployee = emp.idEmployee,
                     employeeName = emp.employeeName,
@@ -47,8 +53,8 @@ namespace WebApiOigaTech.Controllers
                     contractType = db.ContractType.Where(ct => ct.idContractType == emp.fk_ContractType).FirstOrDefault().contractTypeName,
                     hourlySalary = emp.hourlySalary,
                     monthlySalary = emp.monthlySalary,
-                    annualHourlySalary = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0),
-                    annualMonthlySalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0)
+                    annualHourlySalary = currentSalary,
+                    //annualMonthlySalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0)
                 };
 
                 empCustomList.Add(empCustom);
@@ -71,6 +77,12 @@ namespace WebApiOigaTech.Controllers
             if (emp == null)            
                 return null;
 
+            decimal currentSalary;
+            if (emp.fk_ContractType == 1) // Hourly Salary                
+                currentSalary = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0);
+            else // Monthly Salary
+                currentSalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0);
+
             EmployeeCustom empCustom = new EmployeeCustom
             {
                 idEmployee = emp.idEmployee,
@@ -80,49 +92,19 @@ namespace WebApiOigaTech.Controllers
                 contractType = db.ContractType.Where(ct => ct.idContractType == emp.fk_ContractType).FirstOrDefault().contractTypeName,
                 hourlySalary = emp.hourlySalary,
                 monthlySalary = emp.monthlySalary,
-                annualHourlySalary = _employeeService.CalculateAnnualHourlySalary(emp.hourlySalary ?? 0),
-                annualMonthlySalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0)
+                annualHourlySalary = currentSalary,
+                //annualMonthlySalary = _employeeService.CalculateAnnualMonthlySalary(emp.monthlySalary ?? 0)
             };
             List<EmployeeCustom> empList = new List<EmployeeCustom>();
             empList.Add(empCustom);
             return empList;
-        }
+        }                
 
-        // PUT: api/Employees/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmployee(int id, Employee employee)
-        {
-            //if (!ModelState.IsValid)
-            //{
-            //    return BadRequest(ModelState);
-            //}
-
-            if (id != employee.idEmployee)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(employee).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EmployeeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
+        /// <summary>
+        /// Create a new Employee and save it in Database 
+        /// </summary>
+        /// <param name="employee"></param>
+        /// <returns></returns>
         // POST: api/Employees
         [ResponseType(typeof(EmployeeCustom))]
         public IHttpActionResult PostEmployee(EmployeeCustom employee)
@@ -146,23 +128,7 @@ namespace WebApiOigaTech.Controllers
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = employee.idEmployee }, employee);
-        }
-
-        // DELETE: api/Employees/5
-        [ResponseType(typeof(Employee))]
-        public IHttpActionResult DeleteEmployee(int id)
-        {
-            Employee employee = db.Employee.Find(id);
-            if (employee == null)
-            {
-                return NotFound();
-            }
-
-            db.Employee.Remove(employee);
-            db.SaveChanges();
-
-            return Ok(employee);
-        }
+        }        
 
         protected override void Dispose(bool disposing)
         {
@@ -171,11 +137,6 @@ namespace WebApiOigaTech.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool EmployeeExists(int id)
-        {
-            return db.Employee.Count(e => e.idEmployee == id) > 0;
-        }
+        }        
     }
 }
